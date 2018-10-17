@@ -1,0 +1,151 @@
+package placyk;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.geom.Ellipse2D;
+import java.util.Random;
+
+//Glowna klasa programu - ramka
+public class PFrame extends JFrame
+{
+	public PRunnable r[];
+	public Thread t[];
+	public Karuzela k;
+	public Hustawka h;
+	public Lawka l;
+	public Zjezdzalnia z;
+	public Audio a;
+	public int size;
+	public int n;
+	
+	//konstruktor glownej klasy programu - ramki
+	public PFrame()
+	{
+		add(new ImageComponent());
+		pack();
+		
+		size = 17;	//wielkosc ludzika
+		n = 20;	//ilosc ludzikow
+		r = new PRunnable[n];
+		t = new Thread[n];
+		Random rnd = new Random();
+
+		for(int i=0;i<n;i++)
+		{
+			r[i] = new PRunnable(this,rnd.nextInt(390)+40,rnd.nextInt(520)+50,size,n,i);
+			t[i] = new Thread(r[i]);
+		}
+		
+		k = new Karuzela(this);
+		h = new Hustawka(this);
+		l = new Lawka();
+		z = new Zjezdzalnia();
+		a = new Audio();
+		
+		k.start();
+		h.start();
+		a.start();
+
+		for(int i=0;i<n;i++)
+			t[i].start();
+	}
+	
+	//utworzenie ramki
+	public static void main(String[] args)
+	{
+		EventQueue.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				PFrame frame = new PFrame();
+				frame.setTitle("Placyk");
+				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				frame.setLocationByPlatform(true);
+				frame.setResizable(false);
+				frame.setVisible(true);
+			}
+		});
+	}
+	
+	//Komponent na ktorym wszystko jest malowane
+	class ImageComponent extends JComponent
+	{
+		//szerokosc ekranu
+		private final int WIDTH = 470;
+		//wysokosc ekranu
+		private final int HEIGHT = 630;
+		
+		Graphics2D g2;
+		Image image;
+		Image[] karuzela;
+		Image[] hustawka;
+		
+		public ImageComponent()
+		{
+			image = new ImageIcon("Placyk.png").getImage();
+			
+			karuzela = new Image[9];
+			karuzela[0] = new ImageIcon("Carousel1.png").getImage();
+			karuzela[1] = new ImageIcon("Carousel2.png").getImage();
+			karuzela[2] = new ImageIcon("Carousel3.png").getImage();
+			karuzela[3] = new ImageIcon("Carousel4.png").getImage();
+			karuzela[4] = new ImageIcon("Carousel5.png").getImage();
+			karuzela[5] = new ImageIcon("Carousel6.png").getImage();
+			karuzela[6] = new ImageIcon("Carousel7.png").getImage();
+			karuzela[7] = new ImageIcon("Carousel8.png").getImage();
+			karuzela[8] = new ImageIcon("Carousel9.png").getImage();
+			
+			hustawka = new Image[21];
+			hustawka[0] = new ImageIcon("Swing1.png").getImage();
+			hustawka[1] = new ImageIcon("Swing2.png").getImage();
+			hustawka[2] = new ImageIcon("Swing3.png").getImage();
+			hustawka[3] = new ImageIcon("Swing4.png").getImage();
+			hustawka[4] = new ImageIcon("Swing5.png").getImage();
+			hustawka[5] = new ImageIcon("Swing6.png").getImage();
+			hustawka[6] = new ImageIcon("Swing7.png").getImage();
+			hustawka[7] = new ImageIcon("Swing8.png").getImage();
+			hustawka[8] = new ImageIcon("Swing9.png").getImage();
+			hustawka[9] = new ImageIcon("Swing10.png").getImage();
+			hustawka[10] = new ImageIcon("Swing11.png").getImage();
+			hustawka[11] = new ImageIcon("Swing12.png").getImage();
+			hustawka[12] = new ImageIcon("Swing13.png").getImage();
+			hustawka[13] = new ImageIcon("Swing14.png").getImage();
+			hustawka[14] = new ImageIcon("Swing15.png").getImage();
+			hustawka[15] = new ImageIcon("Swing16.png").getImage();
+			hustawka[16] = new ImageIcon("Swing17.png").getImage();
+			hustawka[17] = new ImageIcon("Swing18.png").getImage();
+			hustawka[18] = new ImageIcon("Swing19.png").getImage();
+			hustawka[19] = new ImageIcon("Swing20.png").getImage();
+			hustawka[20] = new ImageIcon("Swing21.png").getImage();
+		}
+		
+		//rysowanie komponentu
+		public void paintComponent(Graphics g)
+		{	
+			g2 = (Graphics2D) g;
+			
+			//obraz
+			g2.drawImage(image, 0, 0, null);
+			
+			g2.drawImage(karuzela[k.getKlatka()], 70, 450, null);
+			g2.drawImage(hustawka[h.getKlatka()], 300, 150, null);
+			
+			//podpis
+			g2.setColor(Color.BLACK);
+			g2.setFont(new Font("Century", Font.BOLD, 12));
+			g2.drawString("Micha³ K", WIDTH-60, HEIGHT+5);
+			
+			//ludziki
+			for(int i=0;i<n;i++)
+			{
+				g2.setColor(Color.BLACK);
+				g2.fill(new Ellipse2D.Double(r[i].getX(), r[i].getY(), size, size));
+				
+				g2.setColor(r[i].getC());
+				g2.fill(new Ellipse2D.Double(r[i].getX(), r[i].getY(), size-2, size-2));
+			}
+		}
+		
+		//zwraca wymiary komponentu
+		public Dimension getPreferredSize(){return new Dimension(WIDTH, HEIGHT);}
+	}
+}
