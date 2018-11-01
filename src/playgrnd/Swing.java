@@ -1,17 +1,17 @@
-package placyk;
+package playgrnd;
 
 import java.util.Random;
 import java.util.concurrent.Semaphore;
 
-public class Hustawka extends Thread
+public class Swing extends Thread
 {
-	private PFrame frame;
+	private Playground frame;
 	private Semaphore semBench, semBench2, semBench3;
 	private Random rand;
 	private boolean place[];
 	private int randomMoves, pictureFrame;
 	
-	public Hustawka(PFrame frame)
+	public Swing(Playground frame)
 	{
 		semBench = new Semaphore(3);
 		semBench2 = new Semaphore(0);
@@ -27,62 +27,62 @@ public class Hustawka extends Thread
 		pictureFrame = 0;
 	}
 	
-	public void sway(PRunnable runnable) throws InterruptedException
+	public void sway(Kid kid) throws InterruptedException
 	{
 		semBench.acquire();
 		
 		if(place[0] == true)
 		{
 			place[0] = false;
-			while( runnable.go(335, 186) == false );
-			runnable.changeSpeed(65);
+			while( kid.go(335, 186) == false );
+			kid.changeSpeed(65);
 			semBench3.release();
 			semBench2.acquire();
 			for(int i = 0; i < randomMoves; i++)
 			{
-				while( runnable.move(315, 186) == false );
-				while( runnable.move(355, 186) == false );
+				while( kid.move(315, 186) == false );
+				while( kid.move(355, 186) == false );
 			}
 			place[0] = true;
-			runnable.changeSpeed();
+			kid.changeSpeed();
 			semBench.release();
-			while( runnable.go(335, 80) == false );
+			while( kid.go(335, 80) == false );
 		}
 		
 		else if(place[1] == true)
 		{
 			place[1] = false;
-			while( runnable.go(335, 206) == false );
-			runnable.changeSpeed(65);
+			while( kid.go(335, 206) == false );
+			kid.changeSpeed(65);
 			semBench3.release();
 			semBench2.acquire();
 			for(int i = 0; i < randomMoves; i++)
 			{
-				while( runnable.move(315, 206) == false );
-				while( runnable.move(355, 206) == false );
+				while( kid.move(315, 206) == false );
+				while( kid.move(355, 206) == false );
 			}
 			place[1] = true;
-			runnable.changeSpeed();
+			kid.changeSpeed();
 			semBench.release();
-			while( runnable.go(260, 206) == false );
+			while( kid.go(260, 206) == false );
 		}
 		
 		else
 		{
 			place[2] = false;
-			while( runnable.go(335, 226) == false );
-			runnable.changeSpeed(65);
+			while( kid.go(335, 226) == false );
+			kid.changeSpeed(65);
 			semBench3.release();
 			semBench2.acquire();
 			for(int i = 0; i < randomMoves; i++)
 			{
-				while( runnable.move(315, 226) == false );
-				while( runnable.move(355, 226) == false );
+				while( kid.move(315, 226) == false );
+				while( kid.move(355, 226) == false );
 			}
 			place[2] = true;
-			runnable.changeSpeed();
+			kid.changeSpeed();
 			semBench.release();
-			while( runnable.go(335, 330) == false );
+			while( kid.go(335, 330) == false );
 		}
 	}
 	

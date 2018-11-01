@@ -1,11 +1,11 @@
-package placyk;
+package playgrnd;
 
 import java.awt.Color;
 import java.util.Random;
 
-public class PRunnable implements Runnable
+public class Kid implements Runnable
 {
-	private PFrame frame;
+	private Playground frame;
 	private Color color;
 	private int size, numberOfThreads, threadNumber, x, y, speed;
 	private int destX, destY; //destination coords
@@ -25,7 +25,7 @@ public class PRunnable implements Runnable
 	
 	public void changeSpeed(int a){ speed = a; }
 	
-	public PRunnable(PFrame frame, int x, int y, int size, int numberOfThreads, int threadNumber)
+	public Kid(Playground frame, int x, int y, int size, int numberOfThreads, int threadNumber)
 	{
 		this.frame = frame;
 		this.size = size;
@@ -140,18 +140,18 @@ public class PRunnable implements Runnable
 			if(i == threadNumber)
 				continue;
 			
-			if( Math.abs(x - frame.runnable[i].getX() ) <= size && Math.abs(y - frame.runnable[i].getY() ) <= size )
+			if( Math.abs(x - frame.kid[i].getX() ) <= size && Math.abs(y - frame.kid[i].getY() ) <= size )
 			{
-				if( (x - frame.runnable[i].getX() ) > 0 && (x - frame.runnable[i].getX() ) <= size )
+				if( (x - frame.kid[i].getX() ) > 0 && (x - frame.kid[i].getX() ) <= size )
 					leftCollision = true;
 					
-				if( (frame.runnable[i].getX() - x) > 0 && (frame.runnable[i].getX() - x) <= size )
+				if( (frame.kid[i].getX() - x) > 0 && (frame.kid[i].getX() - x) <= size )
 					rightCollision = true;
 					
-				if( (y - frame.runnable[i].getY() ) > 0 && (y - frame.runnable[i].getY() ) <= size )
+				if( (y - frame.kid[i].getY() ) > 0 && (y - frame.kid[i].getY() ) <= size )
 					bottomCollision = true;
 					
-				if( (frame.runnable[i].getY() - y) > 0 && (frame.runnable[i].getY() - y) <= size )
+				if( (frame.kid[i].getY() - y) > 0 && (frame.kid[i].getY() - y) <= size )
 					topCollision = true;
 			}
 		}
