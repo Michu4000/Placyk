@@ -1,4 +1,5 @@
 package placyk;
+
 import java.io.File;
 import java.io.IOException;
 import javax.sound.sampled.AudioInputStream;
@@ -15,13 +16,13 @@ public class Audio extends Thread
     {
     	try
         {
-        	File themef = new File("theme.wav");
-            if (themef.exists())
+        	File themeFile = new File("theme.wav");
+            if (themeFile.exists())
             {
-            	AudioInputStream themes = AudioSystem.getAudioInputStream(themef);
+            	AudioInputStream themeStream = AudioSystem.getAudioInputStream(themeFile);
             
                 theme = AudioSystem.getClip();
-                theme.open(themes);
+                theme.open(themeStream);
             }
         } 
         catch (UnsupportedAudioFileException e){}
@@ -29,8 +30,5 @@ public class Audio extends Thread
         catch (LineUnavailableException e){}
     }
     
-    public void run()
-    {
-        theme.loop(Clip.LOOP_CONTINUOUSLY);
-    }
+    public void run(){ theme.loop(Clip.LOOP_CONTINUOUSLY); }
 }

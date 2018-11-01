@@ -1,236 +1,228 @@
 package placyk;
+
 import java.awt.Color;
 import java.util.Random;
 
 public class PRunnable implements Runnable
 {
 	private PFrame frame;
-	private Color k;
-	private int size;
-	private int n;
-	private int m;	//nr porzadkowy watku
+	private Color color;
+	private int size, numberOfThreads, threadNumber, x, y, speed;
+	private int destX, destY; //destination coords
+	private Random rand = new Random();
 	
-	private int x;
-	private int y;
-	private int tempo;
-	//wsp celu
-	private int cx;
-	private int cy;
+	public int getX(){ return x; }
 	
-	private Random rnd = new Random();
+	public int getY(){ return y; }
 	
-	public int getX(){return x;}
+	public Color getColor(){ return color; }
 	
-	public int getY(){return y;}
+	public void faster(){ speed /= 5; }
 	
-	public Color getC(){return k;}
+	public void slower(){ speed = (3*speed)/2; }
 	
-	public void faster(){tempo=(tempo)/5;}
+	public void changeSpeed(){ speed = rand.nextInt(30) + 20; }
 	
-	public void slower(){tempo=(3*tempo)/2;}
+	public void changeSpeed(int a){ speed = a; }
 	
-	public void change_tempo(){tempo = rnd.nextInt(30)+20;}
-	
-	public void change_tempo(int a){tempo = a;}
-	
-	public PRunnable(PFrame frame, int x, int y, int size, int n, int m)
+	public PRunnable(PFrame frame, int x, int y, int size, int numberOfThreads, int threadNumber)
 	{
 		this.frame = frame;
 		this.size = size;
-		this.n = n;
-		this.m = m;
+		this.numberOfThreads = numberOfThreads;
+		this.threadNumber = threadNumber;
 		this.x = x;
 		this.y = y;
-		this.k = new Color(rnd.nextInt(256),rnd.nextInt(256),rnd.nextInt(256));
-		tempo = rnd.nextInt(30)+20;
-		this.cx = x;
-		this.cy = y;
+		this.color = new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
+		this.speed = rand.nextInt(30) + 20;
+		this.destX = x;
+		this.destY = y;
 	}
 	
 	private boolean checkCollisions()
 	{
-		//flagi kolizji w kierunkach:
-		boolean l=false, p=false, g=false, d=false;
+		//collision flags in directions:
+		boolean leftCollision = false, rightCollision = false, topCollision = false, bottomCollision = false;
 		
-		//kolizje z przeszkodami:
-		//karuzela = (112, 492)x85
-		//hustawka = (343, 221)x142
-		//zjezdzalnia = (363, 494)x125
-		//lawka = (299, 361)x49
+		//collisions with obstacles:
+		//carousel = (112, 492)x85
+		//swing = (343, 221)x142
+		//slide = (363, 494)x125
+		//bench = (299, 361)x49
 			
 		if( Math.abs(x - 112) <= (size/2 + 85/2) && Math.abs(y - 492) <= (size/2 + 85/2) )
 		{
 			if( (x - 112) > 0 && (x - 112) <= (size/2 + 85/2) )
-				l=true;
+				leftCollision = true;
 				
 			if( (112 - x) > 0 && (112 - x) <= (size/2 + 85/2) )
-				p=true;
+				rightCollision = true;
 				
 			if( (y - 492) > 0 && (y - 492) <= (size/2 + 85/2) )
-				d=true;
+				bottomCollision = true;
 				
 			if( (492 - y) > 0 && (492 - y) <= (size/2 + 85/2) )
-				g=true;
+				topCollision = true;
 			
-			if ( rnd.nextInt(4)==1 )
+			if ( rand.nextInt(4) == 1 )
 			{
 				while( checkCollisions() == false );
-				try{frame.k.krec(this);}catch (InterruptedException e){}
+				try{ frame.carousel.spin(this) ;} catch (InterruptedException e){}
 			}
 		}
 			
 		else if( Math.abs(x - 343) <= (size/2 + 142/2) && Math.abs(y - 221) <= (size/2 + 142/2) )
 		{
 			if( (x - 343) > 0 && (x - 343) <= (size/2 + 142/2) )
-				l=true;
+				leftCollision = true;
 				
 			if( (343 - x) > 0 && (343 - x) <= (size/2 + 142/2) )
-				p=true;
+				rightCollision = true;
 				
 			if( (y - 221) > 0 && (y - 221) <= (size/2 + 142/2) )
-				d=true;
+				bottomCollision = true;
 				
 			if( (221 - y) > 0 && (221 - y) <= (size/2 + 142/2) )
-				g=true;
+				topCollision = true;
 			
-			if ( rnd.nextInt(50)==1 )
+			if ( rand.nextInt(50) == 1 )
 			{
 				while( checkCollisions() == false );
-				try{frame.h.bujaj(this);}catch (InterruptedException e){}
+				try{ frame.swing.sway(this); } catch (InterruptedException e){}
 			}
 		}
 			
 		else if( Math.abs(x - 363) <= (size/2 + 125/2) && Math.abs(y - 494) <= (size/2 + 125/2) )
 		{
 			if( (x - 363) > 0 && (x - 363) <= (size/2 + 125/2) )
-				l=true;
+				leftCollision = true;
 				
 			if( (363 - x) > 0 && (363 - x) <= (size/2 + 125/2) )
-				p=true;
+				rightCollision = true;
 				
 			if( (y - 494) > 0 && (y - 494) <= (size/2 + 125/2) )
-				d=true;
+				bottomCollision = true;
 				
 			if( (494 - y) > 0 && (494 - y) <= (size/2 + 125/2) )
-				g=true;
+				topCollision = true;
 
-			if ( rnd.nextInt(15)==1 )
+			if ( rand.nextInt(15) == 1 )
 			{
 				while( checkCollisions() == false );
-				try{frame.z.zjedz(this);}catch (InterruptedException e){}
+				try{ frame.slide.ride(this); } catch (InterruptedException e){}
 			}
 		}
 			
 		else if( Math.abs(x - 299) <= (size/2 + 49/2) && Math.abs(y - 361) <= (size/2 + 49/2) )
 		{
 			if( (x - 299) > 0 && (x - 299) <= (size/2 + 49/2) )
-				l=true;
+				leftCollision = true;
 				
 			if( (299 - x) > 0 && (299 - x) <= (size/2 + 49/2) )
-				p=true;
+				rightCollision = true;
 				
 			if( (y - 361) > 0 && (y - 361) <= (size/2 + 49/2) )
-				d=true;
+				bottomCollision = true;
 				
 			if( (361 - y) > 0 && (361 - y) <= (size/2 + 49/2) )
-				g=true;
+				topCollision = true;
 			
-			if ( rnd.nextInt(50)==1 )
+			if ( rand.nextInt(50) == 1 )
 			{
 				while( checkCollisions() == false );
-				try{frame.l.usiadz(this);}catch (InterruptedException e){}
+				try{ frame.bench.sit(this); } catch (InterruptedException e){}
 			}
 		}
 			
-		//kolizje z innymi ludzikami
-		for(int i=0;i<n;i++)
+		//collisions with other kids
+		for(int i = 0; i < numberOfThreads; i++)
 		{
-			if(i==m)
+			if(i == threadNumber)
 				continue;
 			
-			if( Math.abs(x - frame.r[i].getX() ) <= size && Math.abs(y - frame.r[i].getY() ) <= size )
+			if( Math.abs(x - frame.runnable[i].getX() ) <= size && Math.abs(y - frame.runnable[i].getY() ) <= size )
 			{
-				if( (x - frame.r[i].getX() ) > 0 && (x - frame.r[i].getX() ) <= size )
-					l=true;
+				if( (x - frame.runnable[i].getX() ) > 0 && (x - frame.runnable[i].getX() ) <= size )
+					leftCollision = true;
 					
-				if( (frame.r[i].getX() - x) > 0 && (frame.r[i].getX() - x) <= size )
-					p=true;
+				if( (frame.runnable[i].getX() - x) > 0 && (frame.runnable[i].getX() - x) <= size )
+					rightCollision = true;
 					
-				if( (y - frame.r[i].getY() ) > 0 && (y - frame.r[i].getY() ) <= size )
-					d=true;
+				if( (y - frame.runnable[i].getY() ) > 0 && (y - frame.runnable[i].getY() ) <= size )
+					bottomCollision = true;
 					
-				if( (frame.r[i].getY() - y) > 0 && (frame.r[i].getY() - y) <= size )
-					g=true;
+				if( (frame.runnable[i].getY() - y) > 0 && (frame.runnable[i].getY() - y) <= size )
+					topCollision = true;
 			}
 		}
 		
-		return avoidCollision(l,p,g,d);
+		return avoidCollision(leftCollision, rightCollision, topCollision, bottomCollision);
 	}
 	
-	public boolean avoidCollision(boolean l, boolean p, boolean g, boolean d)
+	public boolean avoidCollision(boolean leftCollision, boolean rightCollision, boolean topCollision, boolean bottomCollision)
 	{
-		if(l==false && p==false && g==false && d==false)//brak
+		if(leftCollision == false && rightCollision == false && topCollision == false && bottomCollision == false) //none
 		{
 			return true;
 		}
 		
-		if(l==false && p==true && g==true && d==true)//w lewo
+		if(leftCollision == false && rightCollision == true && topCollision == true && bottomCollision == true) //to left
 		{
 			x--;
 			frame.repaint();
-			wait(tempo);
+			wait(speed);
 			return false;
 		}
 			
-		if(l==true && p==false && g==true && d==true)//w prawo
+		if(leftCollision == true && rightCollision == false && topCollision == true && bottomCollision == true) //to right
 		{
 			x++;
 			frame.repaint();
-			wait(tempo);
+			wait(speed);
 			return false;
 		}	
 				
-		if(l==true && p==true && g==false && d==true)//w gore
+		if(leftCollision == true && rightCollision == true && topCollision == false && bottomCollision == true) //to top
 		{
 			y++;
 			frame.repaint();
-			wait(tempo);
+			wait(speed);
 			return false;
 		}	
 			
-		if(l==true && p==true && g==true && d==false)//w dol
+		if(leftCollision == true && rightCollision == true && topCollision == true && bottomCollision == false) //to bottom
 		{
 			y--;
 			frame.repaint();
-			wait(tempo);
+			wait(speed);
 			return false;
 		}	
 			
-		if(l==false && p==false && g==true && d==true)//w lewo albo prawo
+		if(leftCollision == false && rightCollision == false && topCollision == true && bottomCollision == true) //to left or right
 		{
-			if(rnd.nextBoolean()==true)
+			if(rand.nextBoolean() == true)
 				x--;
 			else
 				x++;
 			frame.repaint();
-			wait(tempo);
+			wait(speed);
 			return false;
 		}	
 			
-		if(l==true && p==true && g==false && d==false)//w gore lub w dol
+		if(leftCollision == true && rightCollision == true && topCollision == false && bottomCollision == false) //to top or bottom
 		{
-			if(rnd.nextBoolean()==true)
+			if(rand.nextBoolean() == true)
 				y--;
 			else
 				y++;
 			frame.repaint();
-			wait(tempo);
+			wait(speed);
 			return false;
 		}	
 			
-		if(l==false && p==false && g==false && d==true)//w lewo albo prawo lub w gore
+		if(leftCollision == false && rightCollision == false && topCollision == false && bottomCollision == true) //to left or right or top
 		{
-			switch(rnd.nextInt(3))
+			switch(rand.nextInt(3))
 			{
 			case 0:
 				x--;
@@ -245,13 +237,13 @@ public class PRunnable implements Runnable
 				break;
 			}
 			frame.repaint();
-			wait(tempo);
+			wait(speed);
 			return false;
 		}	
 			
-		if(l==false && p==false && g==true && d==false)//w lewo albo prawo lub w dol
+		if(leftCollision == false && rightCollision == false && topCollision == true && bottomCollision == false) //to left or right or bottom
 		{
-			switch(rnd.nextInt(3))
+			switch(rand.nextInt(3))
 			{
 			case 0:
 				x--;
@@ -266,13 +258,13 @@ public class PRunnable implements Runnable
 				break;
 			}
 			frame.repaint();
-			wait(tempo);
+			wait(speed);
 			return false;
 		}	
 				
-		if(l==false && p==true && g==false && d==false)//w gore lub w dol lub w lewo
+		if(leftCollision == false && rightCollision == true && topCollision == false && bottomCollision == false) //to top or bottom or left
 		{
-			switch(rnd.nextInt(3))
+			switch(rand.nextInt(3))
 			{
 			case 0:
 				y++;
@@ -287,13 +279,13 @@ public class PRunnable implements Runnable
 				break;
 			}
 			frame.repaint();
-			wait(tempo);
+			wait(speed);
 			return false;
 		}	
 		
-		if(l==true && p==false && g==false && d==false)//w gore lub w dol lub w prawo
+		if(leftCollision == true && rightCollision == false && topCollision == false && bottomCollision == false) //to top or bottom or right
 		{
-			switch(rnd.nextInt(3))
+			switch(rand.nextInt(3))
 			{
 			case 0:
 				y++;
@@ -308,57 +300,57 @@ public class PRunnable implements Runnable
 				break;
 			}
 			frame.repaint();
-			wait(tempo);
+			wait(speed);
 			return false;
 		}	
 		
-		if(l==true && p==true && g==true && d==true)//nigdzie
+		if(leftCollision == true && rightCollision == true && topCollision == true && bottomCollision == true) //none
 		{
-			wait(tempo);
+			wait(speed);
 			return false;
 		}	
 			
-		if(l==true && p==false && g==true && d==false)//w prawo lub w dol
+		if(leftCollision == true && rightCollision == false && topCollision == true && bottomCollision == false) //to right or bottom
 		{
-			if(rnd.nextBoolean()==true)
+			if(rand.nextBoolean() == true)
 				x++;
 			else
 				y--;
 			frame.repaint();
-			wait(tempo);
+			wait(speed);
 			return false;
 		}	
 		
-		if(l==false && p==true && g==false && d==true)//w lewo lub w gore
+		if(leftCollision == false && rightCollision == true && topCollision == false && bottomCollision == true) //to left or top
 		{
-			if(rnd.nextBoolean()==true)
+			if(rand.nextBoolean() == true)
 				x--;
 			else
 				y++;
 			frame.repaint();
-			wait(tempo);
+			wait(speed);
 			return false;
 		}	
 			
-		if(l==false && p==true && g==true && d==false)//w lewo lub w dol
+		if(leftCollision == false && rightCollision == true && topCollision == true && bottomCollision == false) //to left or bottom
 		{
-			if(rnd.nextBoolean()==true)
+			if(rand.nextBoolean() == true)
 				x--;
 			else
 				y--;
 			frame.repaint();
-			wait(tempo);
+			wait(speed);
 			return false;
 		}	
 			
-		if(l==true && p==false && g==false && d==true)//w prawo lub w gore
+		if(leftCollision == true && rightCollision == false && topCollision == false && bottomCollision == true) //to right or top
 		{
-			if(rnd.nextBoolean()==true)
+			if(rand.nextBoolean() == true)
 				y++;
 			else
 				x++;
 			frame.repaint();
-			wait(tempo);
+			wait(speed);
 			return false;
 		}
 		
@@ -367,88 +359,84 @@ public class PRunnable implements Runnable
 	
 	public boolean go(int xx, int yy)
 	{
-		if(x==xx && y==yy)
+		if(x == xx && y == yy)
 			return true;
 		
 		if(x>xx)
 		{
-			if(rnd.nextBoolean()==true)
+			if(rand.nextBoolean() == true)
 				x--;
 		}
 			
 		if(x<xx)
 		{
-			if(rnd.nextBoolean()==true)
+			if(rand.nextBoolean() == true)
 				x++;
 		}
 			
 		if(y>yy)
 		{
-			if(rnd.nextBoolean()==true)
+			if(rand.nextBoolean() == true)
 				y--;
 		}
 			
 		if(y<yy)
 		{
-			if(rnd.nextBoolean()==true)
+			if(rand.nextBoolean() == true)
 				y++;
 		}
 		
 		frame.repaint();
-		wait(tempo);
+		wait(speed);
 		return false;
 	}
 	
 	public boolean move(int xx, int yy)
 	{
-		if(x==xx && y==yy)
+		if(x == xx && y == yy)
 			return true;
 		
-		if(x>xx)
+		if(x > xx)
 			x--;
 			
-		if(x<xx)
+		if(x < xx)
 			x++;
 			
-		if(y>yy)
+		if(y > yy)
 			y--;
 			
-		if(y<yy)
+		if(y < yy)
 			y++;
 		
 		frame.repaint();
-		wait(tempo);
+		wait(speed);
 		return false;
 	}
 	
-	public void wait(int t)
-	{
-		try{Thread.sleep(t);}catch (InterruptedException e){}
-	}
+	public void wait(int t){ try{ Thread.sleep(t); } catch (InterruptedException e){} }
 	
 	@Override
 	public void run()
 	{
 		while(true)
-		//if(free==true)
 		{
 			while(true)
 			{
-				if( checkCollisions()==true )
+				if( checkCollisions() == true )
 					break;
 				else
 				{
-					cx=rnd.nextInt(390)+40;
-					cy=rnd.nextInt(520)+50;
-					change_tempo();
+					destX = rand.nextInt(390) + 40;
+					destY = rand.nextInt(520) + 50;
+					changeSpeed();
 				}	
 			}
 			
-			if(go(cx, cy) == true)
+			if(go(destX, destY) == true)
 			{
-				cx=rnd.nextInt(390)+40;
-				cy=rnd.nextInt(520)+50;
-				change_tempo();
+				destX = rand.nextInt(390) + 40;
+				destY = rand.nextInt(520) + 50;
+				changeSpeed();
 			}
 		}
 	}

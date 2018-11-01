@@ -5,41 +5,41 @@ import java.util.concurrent.Semaphore;
 
 public class Lawka
 {
-	private Semaphore sem_l;
-	private Random rnd;
-	private boolean tab[];
+	private Semaphore semBench;
+	private Random rand;
+	private boolean place[];
 	
 	public Lawka()
 	{
-		sem_l = new Semaphore(2);
-		rnd = new Random();
-		tab = new boolean[2];
-		tab[0] = true;
-		tab[1] = true;
+		semBench = new Semaphore(2);
+		rand = new Random();
+		place = new boolean[2];
+		place[0] = true;
+		place[1] = true;
 	}
 	
-	public void usiadz(PRunnable r) throws InterruptedException
+	public void sit(PRunnable runnable) throws InterruptedException
 	{
-		sem_l.acquire();
+		semBench.acquire();
 		
-		if(tab[0]==true)
+		if(place[0] == true)
 		{
-			tab[0]=false;
-			while( r.go(295, 365) == false );
-			r.wait(rnd.nextInt(32000)+8000);
-			tab[0]=true;
-			sem_l.release();
-			while( r.go(350, 365) == false );
+			place[0] = false;
+			while( runnable.go(295, 365) == false );
+			runnable.wait(rand.nextInt(32000) + 8000);
+			place[0] = true;
+			semBench.release();
+			while( runnable.go(350, 365) == false );
 		}
 		
 		else
 		{
-			tab[1]=false;
-			while( r.go(295, 342) == false );
-			r.wait(rnd.nextInt(32000)+8000);
-			tab[1]=true;
-			sem_l.release();
-			while( r.go(350, 342) == false );
+			place[1] = false;
+			while( runnable.go(295, 342) == false );
+			runnable.wait(rand.nextInt(32000) + 8000);
+			place[1] = true;
+			semBench.release();
+			while( runnable.go(350, 342) == false );
 		}
 	}
 }
